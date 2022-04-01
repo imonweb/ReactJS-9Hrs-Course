@@ -7,8 +7,7 @@ import Footer from './Footer';
 function App() {
  
   return (
-    <div>
-       <h1>React JS</h1>
+    <div className='App'>
        <Header />
        <Content />
        <Footer />
