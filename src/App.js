@@ -4,40 +4,48 @@ import Header from './Header';
 import AddItem from './AddItem';
 import Content from './Content';
 import Footer from './Footer';
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
+import SearchItems from './SearchItems';
 
 function App() {
 
-   const [items, setItems] = useState([
-    {
-      id: 1,
-      checked: true,
-      item: "One half pound bag of Cocoa Covered Almonds"
-    },
-    {
-      id: 2,
-      checked: false,
-      item: "Item 2"
-    },
-    {
-      id: 3,
-      checked: false,
-      item: "Item 3"
-    }
-  ]);
+  //  const [items, setItems] = useState([
+  //   {
+  //     id: 1,
+  //     checked: true,
+  //     item: "One half pound bag of Cocoa Covered Almonds"
+  //   },
+  //   {
+  //     id: 2,
+  //     checked: false,
+  //     item: "Item 2"
+  //   },
+  //   {
+  //     id: 3,
+  //     checked: false,
+  //     item: "Item 3"
+  //   }
+  // ]);
+
+    const [items, setItems] = useState(JSON.parse(localStorage.getItem('shoppinglist')) || [])
 
     const [newItem, setNewItem] = useState('')
-
-    const setAndSaveItems = (newItems) => {
-      setItems(newItems);
-      localStorage.setItem('shoppinglist', JSON.stringify(newItems));
-    }
+    const [search, setSearch] = useState('')
+  
+    useEffect(() => {
+       localStorage.setItem('shoppinglist', JSON.stringify(items));
+    }, [items])
+ 
+    // const setAndSaveItems = (newItems) => {
+    //   setItems(newItems);
+      
+    // }
 
     const addItem = (item) => {
       const id = items.length ? items[items.length - 1].id + 1 : 1;
       const myNewItem = { id, checked: false, item };
       const listItems = [...items, myNewItem];
-      setAndSaveItems(listItems);
+      setItems(listItems);
 
     }
 
@@ -45,7 +53,7 @@ function App() {
       // console.log(`key: ${id}`)
       const listItems = items.map((item) => item.id === id ? { ...item, 
       checked: !item.checked } : item);
-      setAndSaveItems(listItems);
+      setItems(listItems);
     }
 
     const handleDelete = (id) => {
@@ -53,7 +61,7 @@ function App() {
       const listItems = items.filter((item) => item.id !== id);
       // setItems(listItems);
       // localStorage.setItem('shoppinglist', JSON.stringify(listItems));
-      setAndSaveItems(listItems);
+      setItems(listItems);
     }
 
     const handleSubmit = (e) => {
@@ -75,8 +83,12 @@ function App() {
         setNewItem={setNewItem}
         handleSubmit={handleSubmit}
        />
+       <SearchItems 
+        search={search}
+        setSearch={setSearch}
+       />
        <Content 
-        items={items}
+        items={items.filter(item => ((item.item).toLowerCase()).includes(search.toLowerCase()))}
         handleCheck={handleCheck}
         handleDelete={handleDelete}
        />
